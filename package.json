@@ -1,0 +1,13 @@
+{
+  "name": "devops-lab-exam",
+  "version": "1.0.0",
+  "description": "CI/CD Pipeline Project for DevOps Lab Exam",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
