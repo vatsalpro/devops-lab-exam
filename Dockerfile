@@ -1,35 +1,20 @@
-# --- Stage 1: Build the Backend ---
-FROM node:18-alpine AS backend-build
-WORKDIR /app/backend
-COPY backend/package*.json ./
-RUN npm install
-COPY backend/ .
-
-# --- Stage 2: Build the Frontend ---
-FROM node:18-alpine AS frontend-build
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm install
-COPY frontend/ .
-# If frontend needs a build step (like React/Vue), uncomment the next line:
-# RUN npm run build 
-
-# --- Stage 3: Final Production Image ---
+# Use official Node.js Alpine image for a lightweight container
 FROM node:18-alpine
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy built backend and node_modules
-COPY --from=backend-build /app/backend ./backend
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
 
-# Copy frontend (serving as static or via backend)
-COPY --from=frontend-build /app/frontend ./frontend
+# Install production dependencies
+RUN npm install --production
 
-# Expose backend port
-EXPOSE 5000
+# Copy the rest of the application code (server.js and public folder)
+COPY . .
 
-# Set environment variables
-ENV NODE_ENV=production
+# Expose the port the app runs on (matching our server.js port)
+EXPOSE 3000
 
-# Start the application (adjust based on your backend start script)
-WORKDIR /app/backend
-CMD ["npm", "start"]
+# Command to run the application
+CMD ["node", "server.js"]
